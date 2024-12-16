@@ -1,6 +1,7 @@
-use std::fs;
+use std::collections::HashMap;
 use std::io::{self, Write};
 use terminal_size::{terminal_size, Width};
+
 pub struct ArtHandler {
     quote: String,
 }
@@ -26,15 +27,39 @@ impl ArtHandler {
         let step = 25;
         let min_width = 50;
         let max_width = 400;
-        let file_base = "creation_of_ascii";
 
-        let file_path = format!(
-            "{}/{}.txt",
-            file_base,
-            ((width.max(min_width) - min_width) / step * step + min_width).min(max_width)
-        );
+        let size_key =
+            ((width.max(min_width) - min_width) / step * step + min_width).min(max_width);
 
-        fs::read_to_string(file_path).map_err(ArtError::IoError)
+        // Use a HashMap to embed and retrieve ASCII art
+        let ascii_map: HashMap<usize, &str> = HashMap::from([
+            (50, include_str!("../creation_of_ascii/50.txt")),
+            (75, include_str!("../creation_of_ascii/75.txt")),
+            (100, include_str!("../creation_of_ascii/100.txt")),
+            (125, include_str!("../creation_of_ascii/125.txt")),
+            (150, include_str!("../creation_of_ascii/150.txt")),
+            (175, include_str!("../creation_of_ascii/175.txt")),
+            (200, include_str!("../creation_of_ascii/200.txt")),
+            (225, include_str!("../creation_of_ascii/225.txt")),
+            (250, include_str!("../creation_of_ascii/250.txt")),
+            (275, include_str!("../creation_of_ascii/275.txt")),
+            (300, include_str!("../creation_of_ascii/300.txt")),
+            (325, include_str!("../creation_of_ascii/325.txt")),
+            (350, include_str!("../creation_of_ascii/350.txt")),
+            (375, include_str!("../creation_of_ascii/375.txt")),
+            (400, include_str!("../creation_of_ascii/400.txt")),
+        ]);
+
+        // Retrieve the ASCII art for the given size
+        ascii_map
+            .get(&size_key)
+            .map(|&art| art.to_string())
+            .ok_or_else(|| {
+                ArtError::IoError(std::io::Error::new(
+                    std::io::ErrorKind::NotFound,
+                    "painting not found",
+                ))
+            })
     }
 
     fn get_terminal_width() -> Result<usize, ArtError> {
@@ -60,8 +85,8 @@ pub enum ArtError {
 impl std::fmt::Display for ArtError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ArtError::IoError(e) => write!(f, "I/O Error: {}", e),
-            ArtError::TerminalSizeError => write!(f, "Could not determine terminal size"),
+            ArtError::IoError(e) => write!(f, "io error: {}", e),
+            ArtError::TerminalSizeError => write!(f, "could not determine terminal size"),
         }
     }
 }

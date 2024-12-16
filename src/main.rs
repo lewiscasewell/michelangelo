@@ -19,11 +19,11 @@ fn main() {
 
     if watch_mode {
         if let Err(e) = watch::run_watch_mode(art_handler) {
-            eprintln!("Error in watch mode: {}", e);
+            eprintln!("error in watch mode: {}", e);
         }
     } else {
         if let Err(e) = art_handler.display_with_quote() {
-            eprintln!("Error displaying art: {}", e);
+            eprintln!("error displaying painting: {}", e);
         }
     }
 }
