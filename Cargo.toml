@@ -1,0 +1,9 @@
+[package]
+name = "michelangelo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rand = "0.8.5"
+signal-hook = "0.3.17"
+terminal_size = "0.4.1"
